@@ -14,6 +14,7 @@
 #' @param shinyId single-element character vector indicating the output ID of the
 #'   chart to modify (if invoked from a Shiny module, the namespace will be added
 #'   automatically)
+#' @param data A \code{data.frame}.
 #' @param session the Shiny session object to which the chart belongs; usually the
 #'   default value will suffice
 #'
@@ -36,7 +37,7 @@ renderBillboarder <- function(expr, env = parent.frame(), quoted = FALSE) {
 
 #' @rdname billboarder-shiny
 #' @export
-billboarderProxy <- function(shinyId, session = shiny::getDefaultReactiveDomain()) {
+billboarderProxy <- function(shinyId, data = NULL, session = shiny::getDefaultReactiveDomain()) {
   
   if (is.null(session)) {
     stop("billboarderProxy must be called from the server function of a Shiny app")
@@ -51,7 +52,7 @@ billboarderProxy <- function(shinyId, session = shiny::getDefaultReactiveDomain(
       session = session,
       id = shinyId,
       x = structure(
-        list()
+        list(data = data)
       )
     ),
     class = "billboarder_Proxy"
@@ -190,7 +191,7 @@ bb_unload <- function(proxy, ids = NULL) {
 #' @return A \code{billboardProxy} \code{htmlwidget} object.
 #' @export
 #' 
-#' @name bb_focus
+#' @name bb_proxy_focus
 #' 
 #' @examples 
 #' \dontrun{
@@ -226,14 +227,14 @@ bb_unload <- function(proxy, ids = NULL) {
 #'   
 #'   observeEvent(input$focus, {
 #'     billboarderProxy("bb") %>% 
-#'       bb_focus(input$focus)
+#'       bb_proxy_focus(input$focus)
 #'   }, ignoreNULL = FALSE)
 #' }
 #' 
 #' shinyApp(ui = ui, server = server)
 #' }
 #' }
-bb_focus <- function(proxy, ids = NULL) {
+bb_proxy_focus <- function(proxy, ids = NULL) {
   
   if (!"billboarder_Proxy" %in% class(proxy)) 
     stop("This function must be used with a billboarderProxy object")
@@ -245,9 +246,9 @@ bb_focus <- function(proxy, ids = NULL) {
   
 }
 
-#' @rdname bb_focus
+#' @rdname bb_proxy_focus
 #' @export
-bb_defocus <- function(proxy, ids = NULL) {
+bb_proxy_defocus <- function(proxy, ids = NULL) {
   
   if (!"billboarder_Proxy" %in% class(proxy)) 
     stop("This function must be used with a billboarderProxy object")
@@ -272,7 +273,7 @@ bb_defocus <- function(proxy, ids = NULL) {
 #'
 #' @return A \code{billboardProxy} \code{htmlwidget} object.
 #' @export
-bb_axis_labels <- function(proxy, x = NULL, y = NULL) {
+bb_proxy_axis_labels <- function(proxy, x = NULL, y = NULL) {
   
   if (!"billboarder_Proxy" %in% class(proxy)) 
     stop("This function must be used with a billboarderProxy object")
@@ -289,7 +290,7 @@ bb_axis_labels <- function(proxy, x = NULL, y = NULL) {
 #'
 #' @return A \code{billboardProxy} \code{htmlwidget} object.
 #' @export
-bb_xs <- function(proxy, xs) {
+bb_proxy_xs <- function(proxy, xs) {
   
   if (!"billboarder_Proxy" %in% class(proxy)) 
     stop("This function must be used with a billboarderProxy object")
@@ -309,7 +310,7 @@ bb_xs <- function(proxy, xs) {
 #'
 #' @return A \code{billboardProxy} \code{htmlwidget} object.
 #' @export
-bb_transform <- function(proxy, type, targetIds = NULL) {
+bb_proxy_transform <- function(proxy, type, targetIds = NULL) {
   
   if (!"billboarder_Proxy" %in% class(proxy)) 
     stop("This function must be used with a billboarderProxy object")
@@ -317,3 +318,183 @@ bb_transform <- function(proxy, type, targetIds = NULL) {
   .bb_proxy2(proxy, "transform", dropNulls(list(type = type, targetIds = targetIds)))
   
 }
+
+
+#' Update chart groups with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param ... Vector(s) with id of the series, e.g. the name of variables.
+#'
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+bb_proxy_groups <- function(proxy, ...) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  
+  .bb_proxy2(proxy, "groups", list(...))
+}
+
+#' Hide method with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param targetIdsValue Name of series to hide.
+#' @param options Additional options.
+#' 
+#' @seealso \code{\link{bb_proxy_show}}
+#'
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+bb_proxy_hide <- function(proxy, targetIdsValue, options = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  
+  .bb_proxy(proxy, "hide", targetIdsValue = targetIdsValue, options = options)
+}
+
+#' Show method with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param targetIdsValue Name of series to hide.
+#' @param options Additional options.
+#' 
+#' @seealso \code{\link{bb_proxy_hide}}
+#'
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+bb_proxy_show <- function(proxy, targetIdsValue, options = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  
+  .bb_proxy(proxy, "show", targetIdsValue = targetIdsValue, options = options)
+}
+
+
+
+#' Show or hide legend with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param what \code{show} or \code{hide} the legend.
+#' @param targetIds Series ids to show/hide, if \code{NULL} show/hide all legend.
+#' 
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+#' 
+#' @examples 
+#' \dontrun{
+#' 
+#' library("shiny")
+#' 
+#' data("prod_par_filiere")
+#' 
+#' ui <- fluidPage(
+#'   tags$h2("Show or hide legend with Proxy"),
+#'   fluidRow(
+#'     column(
+#'       width = 3,
+#'       checkboxInput(
+#'         inputId = "show_legend", 
+#'         label = "Show legend", 
+#'         value = TRUE
+#'       ),
+#'       checkboxGroupInput(
+#'         inputId = "item_show",
+#'         label = "Item to show in legend", 
+#'         choices = c("Hydraulic" = "prod_hydraulique", 
+#'                     "Wind" = "prod_eolien", 
+#'                     "Solar" = "prod_solaire"), 
+#'         selected = c("prod_hydraulique", "prod_eolien", "prod_solaire")
+#'       )
+#'     ),
+#'     column(
+#'       width = 9,
+#'       billboarderOutput(outputId = "mybb")
+#'     )
+#'   )
+#' )
+#' 
+#' server <- function(input, output, session) {
+#'   
+#'   output$mybb <- renderBillboarder({
+#'     billboarder() %>%
+#'       bb_barchart(
+#'         data = prod_par_filiere[, c("annee", "prod_hydraulique", "prod_eolien", "prod_solaire")], 
+#'         stacked = TRUE
+#'       ) %>%
+#'       bb_data(
+#'         names = list(prod_hydraulique = "Hydraulic", prod_eolien = "Wind", prod_solaire = "Solar"), 
+#'         labels = TRUE
+#'       ) %>% 
+#'       bb_colors_manual(
+#'         "prod_eolien" = "#41AB5D", "prod_hydraulique" = "#4292C6", "prod_solaire" = "#FEB24C"
+#'       ) %>%
+#'       bb_y_grid(show = TRUE) %>%
+#'       bb_y_axis(tick = list(format = suffix("TWh")),
+#'                 label = list(text = "production (in terawatt-hours)", position = "outer-top")) %>% 
+#'       bb_legend(position = "right") %>% 
+#'       bb_labs(title = "Renewable energy production",
+#'               caption = "Data source: RTE (https://opendata.rte-france.com)")
+#'   })
+#'   
+#'   observe({
+#'     if (input$show_legend) {
+#'       billboarderProxy("mybb") %>% bb_proxy_legend(what = "show")
+#'     } else {
+#'       billboarderProxy("mybb") %>% bb_proxy_legend(what = "hide")
+#'     }
+#'   })
+#'   
+#'   observe({
+#'     lapply(
+#'       X = c("prod_hydraulique", "prod_eolien", "prod_solaire"),
+#'       FUN = function(x) {
+#'         if (x %in% input$item_show) {
+#'           billboarderProxy("mybb") %>% bb_proxy_legend(what = "show", targetIds = x)
+#'         } else {
+#'           billboarderProxy("mybb") %>% bb_proxy_legend(what = "hide", targetIds = x)
+#'         }
+#'       }
+#'     )
+#'   })
+#'   
+#' }
+#' 
+#' shinyApp(ui = ui, server = server)
+#' 
+#' }
+bb_proxy_legend <- function(proxy, what = c("show", "hide"), targetIds = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  what <- match.arg(what)
+  if (what == "show") {
+    .bb_proxy(proxy, "legend-show", targetIds = targetIds)
+  } else {
+    .bb_proxy(proxy, "legend-hide", targetIds = targetIds)
+  }
+}
+
+
+
+
+#' Show or hide tooltip with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param what \code{show} or \code{hide} the legend.
+#' @param x x value on which the tooltip must appear.
+#' @param index Index on the x-axis on which the tooltip must appear.
+#' @param ... Additional arguments passed to method.
+#' 
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+bb_proxy_tooltip <- function(proxy, what = c("show", "hide"), x = NULL, index = NULL, ...) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  what <- match.arg(what)
+  data <- list(x = x, index = index, ...)
+  data <- dropNulls(data)
+  if (what == "show") {
+    .bb_proxy(proxy, "tooltip-show", data = data)
+  } else {
+    .bb_proxy(proxy, "tooltip-hide", data = list())
+  }
+}
+

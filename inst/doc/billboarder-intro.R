@@ -12,11 +12,18 @@ df <- as.data.frame(table(
   sample(letters[1:5], 50, TRUE),
   sample(LETTERS[1:5], 50, TRUE)
 ))
-df <- reshape(data = df, idvar = "Var1", timevar = "Var2", direction = "wide")
-df
+df.r <- reshape(data = df, idvar = "Var1", timevar = "Var2", direction = "wide")
+df.r
 
 billboarder() %>% 
-  bb_barchart(data = df)
+  bb_barchart(data = df.r)
+
+## ------------------------------------------------------------------------
+billboarder() %>% 
+  bb_barchart(
+    data = df,
+    mapping = bbaes(x = Var1, y = Freq, group = Var2)
+  )
 
 ## ----linechart-----------------------------------------------------------
 billboarder() %>% 

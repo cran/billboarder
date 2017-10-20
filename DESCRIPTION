@@ -1,13 +1,13 @@
 Package: billboarder
 Title: Create Interactive Chart with the JavaScript 'Billboard' Library
-Version: 0.0.3
+Version: 0.1.0
 Authors@R: c(
   person("Victor", "Perrier", email = "victor.perrier@dreamrs.fr", role = c("aut", "cre")),
   person("Fanny", "Meyer", email = "fanny.meyer@dreamrs.fr", role = c("aut")),
   person("NAVER Corp", role = c("cph"), comment = "billboard library"))
 Description: Provides an 'htmlwidgets' interface to 'billboard.js', 
     a re-usable easy interface JavaScript chart library, based on D3 v4+.
-    Chart types include line charts, scatterplots, bar charts, pie/donut charts and gauge charts.
+    Chart types include line charts, scatterplots, bar/lollipop charts, histogram/density plots, pie/donut charts and gauge charts.
     All charts are interactive, and a proxy method is implemented to smoothly update a chart without rendering it again in 'shiny' apps. 
 URL: https://github.com/dreamRs/billboarder
 BugReports: https://github.com/dreamRs/billboarder/issues
@@ -16,15 +16,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: htmlwidgets, magrittr, jsonlite
-Suggests: RColorBrewer, ggplot2, shiny, testthat, knitr, rmarkdown,
-        prettydoc
+Imports: htmlwidgets, magrittr, jsonlite, ggplot2
+Suggests: RColorBrewer, shiny, testthat, knitr, rmarkdown, prettydoc
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2017-08-28 18:32:50 UTC; Victor
+Packaged: 2017-10-20 14:59:19 UTC; Victor
 Author: Victor Perrier [aut, cre],
   Fanny Meyer [aut],
   NAVER Corp [cph] (billboard library)
 Maintainer: Victor Perrier <victor.perrier@dreamrs.fr>
 Repository: CRAN
-Date/Publication: 2017-08-29 21:43:50 UTC
+Date/Publication: 2017-10-20 18:55:29 UTC

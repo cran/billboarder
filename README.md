@@ -4,7 +4,8 @@
 > Htmlwidget for billboard.js
 
 [![Travis-CI Build Status](https://travis-ci.org/dreamRs/billboarder.svg?branch=master)](https://travis-ci.org/dreamRs/billboarder)
-
+[![version](http://www.r-pkg.org/badges/version/billboarder)](https://CRAN.R-project.org/package=billboarder)
+[![cranlogs](http://cranlogs.r-pkg.org/badges/billboarder)](http://cran.rstudio.com/web/packages/billboarder/index.html)
 
 
 ## Overview
@@ -19,6 +20,9 @@ Note : developpement is heavily inspired by awesome [highcharter](http://jkunst.
 
 Installation :
 ```r
+# From CRAN
+install.packages("billboarder")
+
 # From Github
 # install.packages("devtools")
 devtools::install_github("dreamRs/billboarder")
@@ -265,6 +269,56 @@ billboarder() %>%
 
 
 You can also do step lines.
+
+
+## Histogram & density
+
+You can do histograms !
+
+```r
+billboarder() %>%
+  bb_histogram(data = rnorm(1e5), binwidth = 0.25) %>%
+  bb_colors_manual()
+```
+![](inst/img/histogram.png)
+
+
+With a grouping variable :
+
+```r
+# Generate some data
+dat <- data.frame(
+  sample = c(rnorm(n = 1e4, mean = 1), rnorm(n = 1e4, mean = 2)),
+  group = rep(c("A", "B"), each = 1e4), stringsAsFactors = FALSE
+)
+# Mean by groups
+samples_mean <- tapply(dat$sample, dat$group, mean)
+# histogram !
+billboarder() %>%
+  bb_histogram(data = dat, x = "sample", group = "group", binwidth = 0.25) %>%
+  bb_x_grid(
+    lines = list(
+      list(value = unname(samples_mean['A']), text = "mean of sample A"),
+      list(value = unname(samples_mean['B']), text = "mean of sample B")
+    )
+  )
+```
+![](inst/img/histogram2.png)
+
+
+Density plot with the same data :
+
+```r
+billboarder() %>%
+  bb_densityplot(data = dat, x = "sample", group = "group") %>%
+  bb_x_grid(
+    lines = list(
+      list(value = unname(samples_mean['A']), text = "mean of sample A"),
+      list(value = unname(samples_mean['B']), text = "mean of sample B")
+    )
+  )
+```
+![](inst/img/density.png)
 
 
 

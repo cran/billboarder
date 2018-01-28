@@ -498,3 +498,168 @@ bb_proxy_tooltip <- function(proxy, what = c("show", "hide"), x = NULL, index = 
   }
 }
 
+
+#' Change names of the data with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param old Old names
+#' @param new New names
+#'
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+#' 
+#' @examples 
+#' \dontrun{
+#' 
+#' if (interactive()) {
+#' 
+#' library(shiny)
+#' library(billboarder)
+#' 
+#' ui <- fluidPage(
+#'   tags$h2("Update axis title & data name (tooltip & legend)"),
+#'   billboarderOutput(outputId = "my_bb"),
+#'   textInput(
+#'     inputId = "new_name",
+#'     label = "New name :",
+#'     value = "this is a new name",
+#'     width = "100%"
+#'   ),
+#'   actionButton(
+#'     inputId = "update",
+#'     label = "Update chart",
+#'     width = "100%"
+#'   )
+#' )
+#' 
+#' server <- function(input, output, session) {
+#'   
+#'   output$my_bb <- renderBillboarder({
+#'     dat <- sample(letters[1:5], 100, TRUE)
+#'     billboarder() %>%
+#'       bb_barchart(data = table(dat)) %>% 
+#'       bb_y_axis(label = list(text = "Freq"))
+#'   })
+#'   
+#'   observeEvent(input$update, {
+#'     dat <- sample(letters[1:5], 100, TRUE)
+#'     billboarderProxy(shinyId = "my_bb") %>% 
+#'       bb_proxy_axis_labels(y = input$new_name) %>% 
+#'       ?(old = "Freq", 
+#'                           new = input$new_name) %>% 
+#'       bb_barchart(data = table(dat))
+#'   }, ignoreInit = TRUE)
+#'   
+#' }
+#' 
+#' shinyApp(ui, server)
+#' 
+#' }
+#' 
+#' }
+bb_proxy_data_names <- function(proxy, old = NULL, new = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  data_names <- as.list(new)
+  names(data_names) <- old
+  .bb_proxy(proxy, "data-names", names = data_names)
+}
+
+
+
+#' Change colors with proxy
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param names Names of series
+#' @param colors New colors, in same order that \code{names}.
+#'
+#' @return A \code{billboardProxy} \code{htmlwidget} object.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' 
+#' if (interactive()) {
+#' 
+#' library(shiny)
+#' library(billboarder)
+#' 
+#' ui <- fluidPage(
+#'   tags$h2("Update colors"),
+#'   fluidRow(
+#'     column(
+#'       width = 3,
+#'       selectizeInput(
+#'         inputId = "col_eol",
+#'         label = "Color for 'prod_eolien':",
+#'         choices = c("#66C2A5", "#FC8D62", 
+#'                     "#8DA0CB", "#E78AC3",
+#'                     "#A6D854", "#FFD92F", 
+#'                     "#E5C494", "#B3B3B3")
+#'       ),
+#'       selectizeInput(
+#'         inputId = "col_sol",
+#'         label = "Color for 'prod_solaire':",
+#'         choices = c("#66C2A5", "#FC8D62", 
+#'                     "#8DA0CB", "#E78AC3",
+#'                     "#A6D854", "#FFD92F", 
+#'                     "#E5C494", "#B3B3B3")
+#'       )
+#'     ),
+#'     column(
+#'       width = 9,
+#'       billboarderOutput(outputId = "my_bb")
+#'     )
+#'   )
+#' )
+#' 
+#' server <- function(input, output, session) {
+#' 
+#'   output$my_bb <- renderBillboarder({
+#'     data(prod_par_filiere)
+#'     billboarder() %>%
+#'       bb_barchart(
+#'         data = prod_par_filiere[, c(1, 6, 8)]
+#'       )
+#'   })
+#' 
+#'   observe({
+#'     billboarderProxy(shinyId = "my_bb") %>%
+#'       bb_proxy_data_colors(
+#'         names = c("prod_eolien", "prod_solaire"),
+#'         colors = c(input$col_eol, input$col_sol)
+#'       )
+#'   })
+#' 
+#' }
+#' 
+#' shinyApp(ui, server)
+#' 
+#' }
+#' 
+#' }
+bb_proxy_data_colors <- function(proxy, names = NULL, colors = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  data_colors <- as.list(colors)
+  names(data_colors) <- names
+  .bb_proxy(proxy, "data-colors", colors = data_colors)
+}
+
+
+
+#' Export a Billboard object
+#'
+#' @param proxy A \code{billboardProxy} \code{htmlwidget} object.
+#' @param path Path where to save the widget.
+#'
+#' @return A \code{billboard} \code{htmlwidget} object.
+#' @noRd
+#'
+#' @examples
+#' # TODO
+bb_export <- function(proxy, path = NULL) {
+  if (!"billboarder_Proxy" %in% class(proxy)) 
+    stop("This function must be used with a billboarderProxy object")
+  .bb_proxy(proxy, "export", data = list())
+}

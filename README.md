@@ -131,6 +131,20 @@ billboarder() %>%
 ![](inst/img/scatterchart0.png)
 
 
+You can make a bubble chart using `size` aes : 
+
+```r
+billboarder() %>% 
+  bb_scatterplot(
+    data = iris, 
+    mapping = bbaes(Sepal.Length, Sepal.Width, group = Species, size = Petal.Width),
+    range = c(0.5, 120)
+  ) %>% 
+  bb_x_axis(tick = list(fit = FALSE))
+```
+
+![](inst/img/scatter_bubble.png)
+
 
 ## Pie charts
 
@@ -165,7 +179,7 @@ You can also do donut charts.
 
 ## Lines charts
 
-A time serie with `Date` ! (subchart is optionnal)
+### Time serie with `Date` (and a subchart)
 
 ```r
 library("billboarder")
@@ -193,7 +207,7 @@ billboarder() %>%
 ![](inst/img/rte_linechart_subchart.png)
 
 
-A time serie with `POSIXct` ! (and regions)
+### Time serie with `POSIXct` (and regions)
 
 ```r
 library("billboarder")
@@ -235,7 +249,7 @@ billboarder() %>%
 ![](inst/img/rte_linechart_regions.png)
 
 
-A stacked area chart !
+### Stacked area chart
 
 ```r
 library("billboarder")
@@ -268,7 +282,38 @@ billboarder() %>%
 
 
 
-You can also do step lines.
+### Line range
+
+Don't work in RStudio viewer... Open in browser.
+
+```r
+# Generate data
+dat <- data.frame(
+  date = seq.Date(Sys.Date(), length.out = 20, by = "day"),
+  y1 = round(rnorm(20, 100, 15)),
+  y2 = round(rnorm(20, 100, 15))
+)
+dat$ymin1 <- dat$y1 - 5
+dat$ymax1 <- dat$y1 + 5
+
+dat$ymin2 <- dat$y2 - sample(3:15, 20, TRUE)
+dat$ymax2 <- dat$y2 + sample(3:15, 20, TRUE)
+
+
+# Make chart : use ymin & ymax aes for range
+billboarder(data = dat) %>% 
+  bb_linechart(
+    mapping = bbaes(x = date, y = y1, ymin = ymin1, ymax = ymax1),
+    type = "area-line-range"
+  ) %>% 
+  bb_linechart(
+    mapping = bbaes(x = date, y = y2, ymin = ymin2, ymax = ymax2), 
+    type = "area-spline-range"
+  ) %>% 
+  bb_y_axis(min = 50)
+```
+
+![](inst/img/linechart_range.png)
 
 
 ## Histogram & density
@@ -396,20 +441,7 @@ proxy_example("gauge")
 ```
 
 
-## Combination charts
 
-For now, you have to specify the type of chart according to the data, this might change in the future :
-
-```r
-# from ?plot
-# require(stats); plot(cars); lines(lowess(cars))
-billboarder() %>% 
-  bb_scatterplot(data = cars) %>% 
-  bb_linechart(data = data.frame(lowess(cars)), x = "x") %>% 
-  bb_data(types = list(dist = "scatter", y = "line"))
-
-```
-![](inst/img/multichart0.png)
 
 
 ## Raw API

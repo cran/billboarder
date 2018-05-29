@@ -41,7 +41,7 @@
 #   bb
 # }
 bb_aes <- function(bb, x, y, group = NULL, ...) {
-  mapping <- structure(as.list(match.call()[-1]), class = "uneval")
+  mapping <- structure(as.list(match.call()[-1]), class = "bb.uneval")
   mapping$bb <- NULL
   bb$x$mapping <- mapping
   bb
@@ -71,14 +71,14 @@ bb_aes_string <- function(bb, x, y, group = NULL, ...) {
       }
     }
   )
-  bb$x$mapping <- structure(mapping, class = "uneval")
+  bb$x$mapping <- structure(mapping, class = "bb.uneval")
   bb
 }
 
 #' @rdname billboard-aes
 #' @export
 bbaes <- function(x, y, group = NULL, ...) {
-  mapping <- structure(as.list(match.call()[-1]), class = "uneval")
+  mapping <- structure(as.list(match.call()[-1]), class = "bb.uneval")
   mapping
 }
 
@@ -106,7 +106,7 @@ bbaes_string <- function(x, y, group = NULL, ...) {
       }
     }
   )
-  aes <- structure(mapping, class = "uneval")
+  aes <- structure(mapping, class = "bb.uneval")
   aes
 }
 
@@ -132,8 +132,19 @@ bbmapping <- function(data, mapping) {
       json[[y]] <- as.vector(unname(json[[y]]))
       message("Non unique values in '", x, "' : calculating sum of '", y, "'")
     }
+    if (!is.null(mapping$ymin) & !is.null(mapping$ymax)) {
+      json[[mapping$y]] <- lapply(
+        X = seq_along(json[[mapping$y]]),
+        FUN = function(i) {
+          lapply(X = list(low = json[[mapping$ymin]], mid = json[[mapping$y]], high = json[[mapping$ymax]]), FUN = `[[`, i)
+        }
+      )
+      json[[mapping$ymin]] <- NULL
+      json[[mapping$ymax]] <- NULL
+    }
   } else {
-    grouping <- eval(mapping$group, envir = data, enclos = parent.frame())
+    grouping <- as.character(eval(mapping$group, envir = data, enclos = parent.frame()))
+    grouping_order <- unique(grouping)
     mapping$group <- NULL
     x_un <- eval(mapping$x, envir = data, enclos = parent.frame())
     x_un <- unique(x_un)
@@ -143,16 +154,32 @@ bbmapping <- function(data, mapping) {
       X = stats::setNames(n_, n_),
       FUN = function(iii) {
         if (!is.null(mapping$y)) {
-          y_ <- eval(mapping$y, envir = data_split[[iii]], enclos = parent.frame())
-          x_ <- eval(mapping$x, envir = data_split[[iii]], enclos = parent.frame())
-          idx <- match(x = x_un, table = x_, nomatch = nrow(data_split[[iii]])+1)
-          y_[idx]
+          if (!is.null(mapping$ymin) & !is.null(mapping$ymax)) {
+            ymin_ <- eval(mapping$ymin, envir = data_split[[iii]], enclos = parent.frame())
+            ymax_ <- eval(mapping$ymax, envir = data_split[[iii]], enclos = parent.frame())
+            y_ <- eval(mapping$y, envir = data_split[[iii]], enclos = parent.frame())
+            x_ <- eval(mapping$x, envir = data_split[[iii]], enclos = parent.frame())
+            idx <- match(x = x_un, table = x_, nomatch = nrow(data_split[[iii]])+1)
+            res <- lapply(
+              X = seq_along(y_),
+              FUN = function(i) {
+                lapply(X = list(low = ymin_, mid = y_, high = ymax_), FUN = `[[`, i)
+              }
+            )
+            res[idx]
+          } else {
+            y_ <- eval(mapping$y, envir = data_split[[iii]], enclos = parent.frame())
+            x_ <- eval(mapping$x, envir = data_split[[iii]], enclos = parent.frame())
+            idx <- match(x = x_un, table = x_, nomatch = nrow(data_split[[iii]])+1)
+            y_[idx]
+          }
         } else {
           eval(mapping$x, envir = data_split[[iii]], enclos = parent.frame())
         }
       }
     )
-    if (!is.null(mapping$y)) {
+    json <- json[grouping_order]
+    if (!is.null(mapping$x)) {
       x <- as.character(mapping$x)
       json[[x]] <- x_un
       json <- json[c(x, setdiff(names(json), x))]

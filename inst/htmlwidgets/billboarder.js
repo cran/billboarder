@@ -98,9 +98,24 @@ HTMLWidgets.widget({
             bb_opts.data.xSort = false;
           //}
         }
+        
+        // Custom legend .contents.templat
+        if (typeof bb_opts.legend !== 'undefined') {
+          if (typeof bb_opts.legend.contents !== 'undefined') {
+            if (typeof bb_opts.legend.contents.template !== 'undefined') {
+              //var custom_legend = document.createElement("div");
+              //custom_legend.setAttribute("id", el.id + "_custom_legend");
+              //document.getElementById(el.id)
+    		      //  .insertAdjacentElement("beforeend", custom_legend);
+    		      //bb_opts.legend.contents.bindto = "#" + el.id + "_custom_legend";
+            }
+          }
+        }
 
         // Generate billboard chart
         chart = bb.generate(bb_opts);
+        
+        // 
 
         
         // Caption
@@ -415,22 +430,17 @@ if (HTMLWidgets.shinyMode) {
   Shiny.addCustomMessageHandler('update-billboard-export',
     function(data) {
       var chart = get_billboard(data.id);
-      console.log(data.id);
+      // console.log(data.id);
       if (typeof chart != 'undefined') {
-        var exemple = chart.export('image/png');//.toString();
-        //console.log(exemple);
-        var bbexport = document.createElement('a');
-        bbexport.download = 'billboard.png';
-        bbexport.href = exemple;
-        document.body.appendChild(bbexport);
-        bbexport.click();
-        
-        //var img = document.createElement("img");
-        //img.src = exemple;
-        //var exported = document.getElementById("Export");
-		    //exported.appendChild(img);
-		    //console.log(chart.export);
-		    
+        var dataUrl = chart.export("image/png");
+        var link = document.createElement("a");
+        console.log(dataUrl);
+        link.download = "export.png";
+        link.href = dataUrl;
+        link.target = "_blank";
+        link.innerHTML = "Download chart as image";
+      
+        document.body.appendChild(link);
       }
   });
 }

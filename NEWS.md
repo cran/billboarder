@@ -1,3 +1,11 @@
+billboarder 0.2.4
+==================
+
+* Upgrade billboard library to 1.6.2
+* New function `set_theme` to choose global theme for charts.
+
+
+
 billboarder 0.2.3
 ==================
 

@@ -1,11 +1,12 @@
+## ----setup, echo=FALSE---------------------------------------------------
+library("billboarder")
+
 ## ----title---------------------------------------------------------------
 billboarder() %>% 
   bb_barchart(table(sample(letters[1:6], 50, TRUE))) %>% 
   bb_title(text = "My title", position = "center")
 
 ## ----color_palette-------------------------------------------------------
-library("billboarder")
-
 data("prod_par_filiere")
 prod_par_filiere[, c(1, 3, 4, 5, 6, 8)]
 

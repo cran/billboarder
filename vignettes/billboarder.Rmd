@@ -1,40 +1,24 @@
-# billboarder
+---
+title: "billboarder"
+author: "Victor Perrier"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{billboarder}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
-
-> Htmlwidget for billboard.js
-
-[![Travis-CI Build Status](https://travis-ci.org/dreamRs/billboarder.svg?branch=master)](https://travis-ci.org/dreamRs/billboarder)
-[![version](http://www.r-pkg.org/badges/version/billboarder)](https://CRAN.R-project.org/package=billboarder)
-[![cranlogs](http://cranlogs.r-pkg.org/badges/billboarder)](https://CRAN.R-project.org/package=billboarder)
-
-
-## Overview
-
-This package allow you to use [billboard.js](https://naver.github.io/billboard.js/),
-a re-usable easy interface JavaScript chart library, based on D3 v4+.
-
-A **proxy** method is implemented to smoothly update charts in shiny applications, see below for details.
-
-Note : Development is heavily inspired by awesome [highcharter](http://jkunst.com/highcharter/) by [Joshua Kunst](https://github.com/jbkunst).
-
-
-## Installation :
-
-```r
-# From CRAN
-install.packages("billboarder")
-
-# From Github
-# install.packages("devtools")
-devtools::install_github("dreamRs/billboarder")
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library("billboarder")
 ```
 
 
-For interactive examples & documentation, see `pkgdown` site : https://dreamrs.github.io/billboarder/index.html
-
-
-
-Other examples:
+Examples of charts you can make with `billboarder` :
 
   - [Bar chart](#Bar-chart)
   - [Scatter plot](#scatter-plot)
@@ -47,39 +31,41 @@ Other examples:
 
 ## Bar chart
 
-You can do barcharts !
+Create barcharts with `bb_barchart` :
 
-
-```r
+```{r barchart}
 library("billboarder")
 
 # data
 data("prod_par_filiere")
 
-# a bar chart !
-billboarder() %>%
-  bb_barchart(data = prod_par_filiere[, c("annee", "prod_hydraulique")], color = "#102246") %>%
+billboarder(data = prod_par_filiere) %>%
+  bb_barchart(
+    mapping = bbaes(x = annee, y = prod_hydraulique), color = "#102246"
+  ) %>%
   bb_y_grid(show = TRUE) %>%
-  bb_y_axis(tick = list(format = suffix("TWh")),
-            label = list(text = "production (in terawatt-hours)", position = "outer-top")) %>% 
+  bb_y_axis(
+    tick = list(format = suffix("TWh")),
+    label = list(text = "production (in terawatt-hours)", position = "outer-top")
+  ) %>% 
   bb_legend(show = FALSE) %>% 
-  bb_labs(title = "French hydraulic production",
-          caption = "Data source: RTE (https://opendata.rte-france.com)")
+  bb_labs(
+    title = "French hydraulic production",
+    caption = "Data source: RTE (https://opendata.rte-france.com)"
+  )
 ```
 
-![](man/figures/rte_barchart0.png)
 
 
 
-And dodge bar chart too !
+To create a dodge barchart, if your data are in "wide" format, use:
 
-```r
+```{r barchart-dodge}
 library("billboarder")
 
 # data
 data("prod_par_filiere")
 
-# dodge bar chart !
 billboarder() %>%
   bb_barchart(
     data = prod_par_filiere[, c("annee", "prod_hydraulique", "prod_eolien", "prod_solaire")]
@@ -88,19 +74,22 @@ billboarder() %>%
     names = list(prod_hydraulique = "Hydraulic", prod_eolien = "Wind", prod_solaire = "Solar")
   ) %>% 
   bb_y_grid(show = TRUE) %>%
-  bb_y_axis(tick = list(format = suffix("TWh")),
-            label = list(text = "production (in terawatt-hours)", position = "outer-top")) %>% 
+    bb_y_axis(
+    tick = list(format = suffix("TWh")),
+    label = list(text = "production (in terawatt-hours)", position = "outer-top")
+  ) %>% 
   bb_legend(position = "inset", inset = list(anchor = "top-right")) %>% 
-  bb_labs(title = "Renewable energy production",
-          caption = "Data source: RTE (https://opendata.rte-france.com)")
+  bb_labs(
+    title = "Renewable energy production",
+    caption = "Data source: RTE (https://opendata.rte-france.com)"
+  )
 ```
 
-![](man/figures/rte_barchart_dodge.png)
 
 
-Even stacked bar charts !
+Same principle for stacked bar charts :
 
-```r
+```{r barchart-stacked}
 library("billboarder")
 
 # data
@@ -120,34 +109,35 @@ billboarder() %>%
     "prod_eolien" = "#41AB5D", "prod_hydraulique" = "#4292C6", "prod_solaire" = "#FEB24C"
   ) %>%
   bb_y_grid(show = TRUE) %>%
-  bb_y_axis(tick = list(format = suffix("TWh")),
-            label = list(text = "production (in terawatt-hours)", position = "outer-top")) %>% 
-  bb_legend(position = "right") %>% 
-  bb_labs(title = "Renewable energy production",
-          caption = "Data source: RTE (https://opendata.rte-france.com)")
+    bb_y_axis(
+    tick = list(format = suffix("TWh")),
+    label = list(text = "production (in terawatt-hours)", position = "outer-top")
+  ) %>% 
+  bb_legend(position = "inset", inset = list(anchor = "top-right")) %>% 
+  bb_labs(
+    title = "Renewable energy production",
+    caption = "Data source: RTE (https://opendata.rte-france.com)"
+  )
 ```
-
-![](man/figures/rte_barchart_stacked.png)
 
 
 
 ## Scatter plot
 
-Classic :
+A classic one:
 
-```r
+```{r scatter}
 billboarder() %>% 
  bb_scatterplot(data = iris, x = "Sepal.Length", y = "Sepal.Width", group = "Species") %>% 
  bb_axis(x = list(tick = list(fit = FALSE))) %>% 
  bb_point(r = 8)
 
 ```
-![](man/figures/scatterchart0.png)
 
 
 You can make a bubble chart using `size` aes : 
 
-```r
+```{r scatter-bubble}
 billboarder() %>% 
   bb_scatterplot(
     data = iris, 
@@ -157,14 +147,14 @@ billboarder() %>%
   bb_x_axis(tick = list(fit = FALSE))
 ```
 
-![](man/figures/scatter_bubble.png)
+
 
 
 ## Pie charts
 
-If you have to, you can do pie charts !
+Create pie charts :
 
-```r
+```{r pie}
 library("billboarder")
 
 # data
@@ -185,8 +175,6 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 ```
 
-![](man/figures/rte_piechart.png)
-
 
 You can also do donut charts.
 
@@ -195,7 +183,7 @@ You can also do donut charts.
 
 ### Time serie with `Date` (and a subchart)
 
-```r
+```{r lines-date}
 library("billboarder")
 
 # data
@@ -218,12 +206,11 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 ```
 
-![](man/figures/lines-subchart.gif)
 
 
 ### Zoom by dragging
 
-```r
+```{r lines-zoom1}
 billboarder() %>% 
   bb_linechart(
     data = equilibre_mensuel[, c("date", "consommation", "production")], 
@@ -242,20 +229,24 @@ billboarder() %>%
           y = "In megawatt (MW)",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 ```
-![](man/figures/lines-zoom-drag.gif)
+
 
 
 ### Time serie with `POSIXct` (and regions)
 
-```r
+```{r lines-time}
 library("billboarder")
 
 # data
 data("cdc_prod_filiere")
 
 # Retrieve sunrise and and sunset data with `suncalc`
-library("suncalc")
-sun <- getSunlightTimes(date = as.Date("2017-06-12"), lat = 48.86, lon = 2.34, tz = "CET")
+# library("suncalc")
+# sun <- getSunlightTimes(date = as.Date("2017-06-12"), lat = 48.86, lon = 2.34, tz = "CET")
+sun <- data.frame(
+  sunrise = as.POSIXct("2017-06-12 05:48:14"),
+  sunset = as.POSIXct("2017-06-12 21:55:32")
+)
 
 
 # line chart
@@ -284,18 +275,17 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 ```
 
-![](man/figures/rte_linechart_regions.png)
+
 
 
 ### Stacked area chart
 
-```r
+```{r area-stacked}
 library("billboarder")
 
 # data
 data("cdc_prod_filiere")
 
-# area chart !
 billboarder() %>% 
   bb_linechart(
     data = cdc_prod_filiere[, c("date_heure", "prod_eolien", "prod_hydraulique", "prod_solaire")], 
@@ -316,15 +306,14 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 ```
 
-![](man/figures/rte_linechart_area.png)
 
 
 
 ### Line range
 
-Don't work in RStudio viewer... Open in browser.
+Use RStudio >= 1.2.0 to display in viewer.
 
-```r
+```{r lines-range}
 # Generate data
 dat <- data.frame(
   date = seq.Date(Sys.Date(), length.out = 20, by = "day"),
@@ -351,24 +340,23 @@ billboarder(data = dat) %>%
   bb_y_axis(min = 50)
 ```
 
-![](man/figures/linechart_range.png)
 
 
 ## Histogram & density
 
-You can do histograms !
+Create histograms with a numeric vector (or `data.frame`) :
 
-```r
+```{r histo}
 billboarder() %>%
   bb_histogram(data = rnorm(1e5), binwidth = 0.25) %>%
   bb_colors_manual()
 ```
-![](man/figures/histogram.png)
+
 
 
 With a grouping variable :
 
-```r
+```{r histo-group}
 # Generate some data
 dat <- data.frame(
   sample = c(rnorm(n = 1e4, mean = 1), rnorm(n = 1e4, mean = 2)),
@@ -386,12 +374,12 @@ billboarder() %>%
     )
   )
 ```
-![](man/figures/histogram2.png)
+
 
 
 Density plot with the same data :
 
-```r
+```{r density-group}
 billboarder() %>%
   bb_densityplot(data = dat, x = "sample", group = "group") %>%
   bb_x_grid(
@@ -401,130 +389,5 @@ billboarder() %>%
     )
   )
 ```
-![](man/figures/density.png)
 
-
-
-## Shiny interaction
-
-Some events will trigger Shiny's inputs in application, such as click. Inputs id associated with `billboarder` charts use this pattern :
-
-```r
-input$CHARTID_EVENT
-```
-
-Look at this example, chart id is `mybbchart` so you retrieve click with `input$mybbchart_click` :
-
-```r
-library("shiny")
-library("billboarder")
-
-# data
-data("prod_par_filiere")
-prod_par_filiere_l <- reshape2::melt(data = prod_par_filiere)
-prod_par_filiere_l <- prod_par_filiere_l[
-  with(prod_par_filiere_l, annee == "2016" & variable != "prod_total"), 2:3
-]
-prod_par_filiere_l <- prod_par_filiere_l[order(prod_par_filiere_l$value), ]
-
-
-# app
-ui <- fluidPage(
-  billboarderOutput(outputId = "mybbchart"),
-  br(),
-  verbatimTextOutput(outputId = "click")
-)
-
-server <- function(input, output, session) {
-  
-  output$mybbchart <- renderBillboarder({
-    billboarder() %>%
-      bb_barchart(data = prod_par_filiere_l) %>% 
-      bb_y_grid(show = TRUE) %>% 
-      bb_legend(show = FALSE) %>%
-      bb_x_axis(categories = prod_par_filiere_l$variable, fit = FALSE) %>% 
-      bb_labs(title = "French electricity generation by branch in 2016",
-              y = "production (in terawatt-hours)",
-              caption = "Data source: RTE (https://opendata.rte-france.com)")
-  })
-  
-  output$click <- renderPrint({
-    cat("# input$mybbchart_click$category", "\n")
-    input$mybbchart_click$category
-  })
-  
-}
-
-shinyApp(ui = ui, server = server)
-```
-
-![](man/figures/shiny_click.png)
-
-
-## Proxy
-
-You can modify existing charts with function `billboarderProxy` :
-
-![](man/figures/billboarder_proxy.gif)
-
-
-To see examples, run : 
-
-```r
-library("billboarder")
-proxy_example("bar")
-proxy_example("line")
-proxy_example("pie")
-proxy_example("gauge")
-```
-
-
-
-
-
-## Raw API
-
-If what you want to do is not possible with higher function in the package, you can anyway do what you want, you just have to pass a list-JSON as parameter :
-
-
-```r
-data(economics, package = "ggplot2")
-
-# Construct a list in JSON format
-params <- list(
-  data = list(
-    x = "x",
-    json = list(
-      x = economics$date,
-      y = economics$psavert
-    ),
-    type = "spline"
-  ),
-  legend = list(show = FALSE),
-  point = list(show = FALSE),
-  axis = list(
-    x = list(
-      type = "timeseries",
-      tick = list(
-        count = 20,
-        fit = TRUE,
-        format = "%e %b %y"
-      )
-    ),
-    y = list(
-      label = list(
-        text = "Personal savings rate"
-      ),
-      tick = list(
-        format = htmlwidgets::JS("function(x) {return x + '%';}")
-      )
-    )
-  )
-)
-
-# Pass the list as parameter
-billboarder(params)
-```
-
-![](man/figures/linechart0.png)
 

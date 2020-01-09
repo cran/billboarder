@@ -1,11 +1,11 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 library("billboarder")
 
-## ----barchart------------------------------------------------------------
+## ----barchart-----------------------------------------------------------------
 library("billboarder")
 
 # data
@@ -26,7 +26,7 @@ billboarder(data = prod_par_filiere) %>%
     caption = "Data source: RTE (https://opendata.rte-france.com)"
   )
 
-## ----barchart-dodge------------------------------------------------------
+## ----barchart-dodge-----------------------------------------------------------
 library("billboarder")
 
 # data
@@ -50,7 +50,7 @@ billboarder() %>%
     caption = "Data source: RTE (https://opendata.rte-france.com)"
   )
 
-## ----barchart-stacked----------------------------------------------------
+## ----barchart-stacked---------------------------------------------------------
 library("billboarder")
 
 # data
@@ -80,14 +80,14 @@ billboarder() %>%
     caption = "Data source: RTE (https://opendata.rte-france.com)"
   )
 
-## ----scatter-------------------------------------------------------------
+## ----scatter------------------------------------------------------------------
 billboarder() %>% 
  bb_scatterplot(data = iris, x = "Sepal.Length", y = "Sepal.Width", group = "Species") %>% 
  bb_axis(x = list(tick = list(fit = FALSE))) %>% 
  bb_point(r = 8)
 
 
-## ----scatter-bubble------------------------------------------------------
+## ----scatter-bubble-----------------------------------------------------------
 billboarder() %>% 
   bb_scatterplot(
     data = iris, 
@@ -95,7 +95,7 @@ billboarder() %>%
   ) %>% 
   bb_x_axis(tick = list(fit = FALSE))
 
-## ----pie-----------------------------------------------------------------
+## ----pie----------------------------------------------------------------------
 library("billboarder")
 
 # data
@@ -115,7 +115,7 @@ billboarder() %>%
   bb_labs(title = "Share of nuclear power in France in 2016",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
-## ----lines-date----------------------------------------------------------
+## ----lines-date---------------------------------------------------------------
 library("billboarder")
 
 # data
@@ -137,7 +137,7 @@ billboarder() %>%
           y = "In megawatt (MW)",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
-## ----lines-zoom1---------------------------------------------------------
+## ----lines-zoom1--------------------------------------------------------------
 billboarder() %>% 
   bb_linechart(
     data = equilibre_mensuel[, c("date", "consommation", "production")], 
@@ -156,7 +156,7 @@ billboarder() %>%
           y = "In megawatt (MW)",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
-## ----lines-time----------------------------------------------------------
+## ----lines-time---------------------------------------------------------------
 library("billboarder")
 
 # data
@@ -196,7 +196,7 @@ billboarder() %>%
           y = "In megawatt (MW)",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
-## ----area-stacked--------------------------------------------------------
+## ----area-stacked-------------------------------------------------------------
 library("billboarder")
 
 # data
@@ -221,7 +221,7 @@ billboarder() %>%
           y = "In megawatt (MW)",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
-## ----lines-range---------------------------------------------------------
+## ----lines-range--------------------------------------------------------------
 # Generate data
 dat <- data.frame(
   date = seq.Date(Sys.Date(), length.out = 20, by = "day"),
@@ -247,12 +247,12 @@ billboarder(data = dat) %>%
   ) %>% 
   bb_y_axis(min = 50)
 
-## ----histo---------------------------------------------------------------
+## ----histo--------------------------------------------------------------------
 billboarder() %>%
   bb_histogram(data = rnorm(1e5), binwidth = 0.25) %>%
   bb_colors_manual()
 
-## ----histo-group---------------------------------------------------------
+## ----histo-group--------------------------------------------------------------
 # Generate some data
 dat <- data.frame(
   sample = c(rnorm(n = 1e4, mean = 1), rnorm(n = 1e4, mean = 2)),
@@ -270,7 +270,7 @@ billboarder() %>%
     )
   )
 
-## ----density-group-------------------------------------------------------
+## ----density-group------------------------------------------------------------
 billboarder() %>%
   bb_densityplot(data = dat, x = "sample", group = "group") %>%
   bb_x_grid(

@@ -31,17 +31,21 @@ billboarder <- function(bb_opts = list(), data = NULL, width = NULL, height = NU
 
   # create widget
   createWidget(
-    name = 'billboarder',
+    name = "billboarder",
     x = x,
     width = width,
     height = height,
-    package = 'billboarder',
+    package = "billboarder",
     elementId = elementId, 
-    dependencies = theme_dependency(),
+    dependencies = billboard_dependencies(),
     sizingPolicy = sizingPolicy(
-      defaultWidth = "95%",
+      defaultWidth = "100%",
+      defaultHeight = "100%",
       viewer.defaultHeight = "100%",
       viewer.defaultWidth = "100%",
+      browser.defaultHeight = "100%",
+      browser.defaultWidth = "100%",
+      knitr.defaultHeight = "320px",
       knitr.figure = FALSE,
       browser.fill = TRUE,
       padding = 10
@@ -49,8 +53,35 @@ billboarder <- function(bb_opts = list(), data = NULL, width = NULL, height = NU
   )
 }
 
+#' @importFrom htmltools tags
+billboarder_html <- function(id, style, class, ...) {
+  tags$div(
+    style = style, class = class,
+    style = "position: relative;",
+    tags$a(
+      id = paste0(id, "-export"),
+      style = "position:absolute; top:0; right:0; display:none; z-index:50;"
+    ),
+    tags$div(id = id, class = class, style = style, ...)
+  )
+}
 
-
-
+#' @importFrom htmltools htmlDependency
+billboard_dependencies <- function() {
+  theme <- getOption(
+    x = "billboard.theme", 
+    default = "billboard.min.css"
+  )
+  theme <- paste0("billboard/", theme)
+  htmlDependency(
+    name = "billboard", 
+    version = "1.11.1", 
+    src = c(file = "htmlwidgets/lib"),
+    package = "billboarder",
+    script = "billboard/billboard.pkgd.min.js",
+    stylesheet = c(theme, "billboarder.css"), 
+    all_files = FALSE
+  )
+}
 
 

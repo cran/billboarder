@@ -23,11 +23,8 @@ dropNulls <- function(x) {
 #'
 #' @noRd
 .bb_opt <- function(bb, name, ...) {
-  
-  if(!any(class(bb) %in% c("billboarder", "billboarder_Proxy"))){
-    stop("bb must be a billboarder or a billboarderProxy object")
-  }
 
+  bb$x$bb_empty <- NULL
   if (is.null(bb$x$bb_opts[[name]])) {
     bb$x$bb_opts[[name]] <- list(...)
   } else {
@@ -48,6 +45,7 @@ dropNulls <- function(x) {
 #' @noRd
 .bb_opt2 <- function(bb, name, l) {
 
+  bb$x$bb_empty <- NULL
   if (is.null(bb$x$bb_opts[[name]])) {
     bb$x$bb_opts[[name]] <- l
   } else {
@@ -206,6 +204,7 @@ bb_legend <- function(bb, ...) {
 #' @param text The chart title.
 #' @param padding A named list with \code{top}, \code{right}, \code{bottom}, \code{left} values.
 #' @param position A string specifying the position of the title.
+#' @param ... Additional arguments.
 #'
 #' @return A \code{billboard} \code{htmlwidget} object.
 #' @export
@@ -217,9 +216,12 @@ bb_legend <- function(bb, ...) {
 #'   bb_barchart(data = table(sample(letters, 100, TRUE))) %>% 
 #'   bb_title(text = "Random letters", position = "center")
 #' 
-bb_title <- function(bb, text = NULL, padding = NULL, position = "top-center") {
+bb_title <- function(bb, text = NULL, padding = NULL, position = "top-center", ...) {
 
-  .bb_opt2(bb, "title", dropNulls(list(text = text, padding = padding, position = position)))
+  .bb_opt2(bb, "title", dropNulls(c(
+    list(text = text, padding = padding, position = position),
+    list(...)
+  )))
 
 }
 
@@ -834,4 +836,108 @@ bb_radar <- function(bb, ...) {
   .bb_opt(bb, "radar", ...)
   
 }
+
+
+
+
+
+
+
+
+#' Export a Billboard to PNG
+#'
+#' @param bb A \code{\link{billboarder}} \code{htmlwidget} object
+#'  or a \code{\link{billboarderProxy}} \code{htmlwidget} object.
+#' @param filename A string of the filename, excluding extension (will be \code{".png"}).
+#' @param download_label Label to appear on the link to download PNG.
+#' @param ... Additional arguments (not used).
+#' 
+#'
+#' @return A \code{billboard} \code{htmlwidget} object.
+#' @export
+#' 
+#' @note This function has two uses:
+#' \itemize{
+#'  \item{\strong{in shiny:} you can export to PNG with an \code{observeEvent} by using \code{\link{billboarderProxy}}.}
+#'  \item{\strong{in markdown and in shiny:} add a button to download chart as PNG.}
+#' }
+#'
+#' @examples
+#' 
+#' # Add a button to download as PNG:
+#' 
+#' data("equilibre_mensuel")
+#' billboarder() %>% 
+#'   bb_linechart(
+#'     data = equilibre_mensuel,
+#'     mapping = bbaes(date, solde),
+#'     type = "spline"
+#'   ) %>% 
+#'   bb_x_axis(
+#'     tick = list(format = "%Y-%m", fit = FALSE)
+#'   ) %>% 
+#'   bb_export(
+#'     filename = "my-awesome-chart",
+#'     download_label = "Click to download"
+#'   )
+#'   
+#'
+#' # In shiny, you can use proxy :
+#' 
+#' if (interactive()) {
+#'   library(shiny)
+#'   library(billboarder)
+#'   
+#'   ui <- fluidPage(
+#'     fluidRow(
+#'       column(
+#'         width = 8, offset = 2,
+#'         tags$h1("Export billboard as PNG via Proxy"),
+#'         billboarderOutput(outputId = "mybb"),
+#'         actionButton(
+#'           inputId = "export", 
+#'           label = "Export", 
+#'           icon = icon("download")
+#'         )
+#'       )
+#'     )
+#'   )
+#'   
+#'   server <- function(input, output, session) {
+#'     
+#'     output$mybb <- renderBillboarder({
+#'       data("prod_par_filiere")
+#'       billboarder() %>%
+#'         bb_barchart(
+#'           data = prod_par_filiere[, c("annee", "prod_hydraulique")],
+#'           color = "#102246"
+#'         ) %>%
+#'         bb_y_grid(show = TRUE)
+#'     })
+#'     
+#'     observeEvent(input$export, {
+#'       billboarderProxy(shinyId = "mybb") %>% 
+#'         bb_export(filename = "my-billboard-chart")
+#'     })
+#'     
+#'   }
+#'   
+#'   shinyApp(ui, server)
+#' }
+bb_export <- function(bb, filename = NULL, download_label = "Export (.png)", ...) {
+  if (is.null(filename))
+    filename <- paste0("export-", Sys.time())
+  if (inherits(bb, "billboarder_Proxy")) {
+    .bb_proxy(bb, "export", filename = filename)
+  } else {
+    .bb_opt(bb, "export", filename = filename, download_label = download_label)
+  }
+}
+
+
+
+
+
+
+
 

@@ -22,7 +22,7 @@ billboarder <- function(bb_opts = list(), data = NULL, width = NULL, height = NU
   bb_empty <- getOption(x = "bb.empty")
   if (is.function(bb_empty))
     bb_empty <- bb_empty()
-  
+
   x <- list(
     bb_opts = bb_opts,
     bb_empty = bb_empty,
@@ -73,14 +73,19 @@ billboard_dependencies <- function() {
     default = "billboard.min.css"
   )
   theme <- paste0("billboard/", theme)
+  palette <- getOption(x = "billboard.palette", default = NULL)
+  if (!is.null(palette)) {
+    palette <- sprintf("<style>.bb-color-pattern {background-image: url('%s') !important;}</style>", palette)
+  }
   htmlDependency(
     name = "billboard", 
-    version = "1.11.1", 
+    version = "2.2.2", 
     src = c(file = "htmlwidgets/lib"),
     package = "billboarder",
     script = "billboard/billboard.pkgd.min.js",
     stylesheet = c(theme, "billboarder.css"), 
-    all_files = FALSE
+    all_files = FALSE,
+    head = palette
   )
 }
 

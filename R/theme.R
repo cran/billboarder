@@ -1,11 +1,14 @@
 
-#' Set theme for Billboard charts
+#' Set theme and default colors for Billboard charts
 #'
-#' @param name Name of the theme, possible values are : \code{"billboard"}, \code{"insight"}, \code{"graph"}.
+#' @param name Name of the theme, possible values are : \code{"billboard"},
+#'  \code{"insight"}, \code{"graph"}, \code{"datalab"}.
 #' 
-#' @note You can only use one theme at a time (in Shiny applications or Markdown documents).
+#' @note You can only use one theme and palette at a time (in Shiny applications or Markdown documents).
 #'
 #' @export
+#' 
+#' @name billboard-theme
 #'
 #' @examples
 #' library("billboarder")
@@ -25,8 +28,18 @@
 #'   bb_legend(position = "inset", inset = list(anchor = "top-right")) %>% 
 #'   bb_labs(title = "Renewable energy production",
 #'           caption = "Data source: RTE (https://opendata.rte-france.com)")
-set_theme <- function(name = c("billboard", "insight", "graph")) {
+set_theme <- function(name = c("billboard", "insight", "graph", "datalab")) {
   name <- match.arg(arg = name)
   options("billboard.theme" = paste0(name, ".min.css"))
 }
+
+#' @param colors Vector of colors to use as default.
+#' @export
+#' @rdname billboard-theme
+set_color_palette <- function(colors) {
+  colors <- paste(colors, collapse = ";")
+  options("billboard.palette" = colors)
+}
+
+
 

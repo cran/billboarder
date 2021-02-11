@@ -28,8 +28,12 @@ long <- reshape(
 ## -----------------------------------------------------------------------------
 billboarder(height = "200px") %>% 
   bb_linechart(data = wide, type = "spline")
+
+## -----------------------------------------------------------------------------
 billboarder(height = "200px") %>% 
   bb_linechart(data = wide, type = "step")
+
+## -----------------------------------------------------------------------------
 billboarder(height = "200px") %>% 
   bb_linechart(data = wide, type = "area")
 
@@ -48,6 +52,8 @@ billboarder() %>%
 ## -----------------------------------------------------------------------------
 billboarder() %>% 
   bb_linechart(data = wide, dasharray = 4)
+
+## -----------------------------------------------------------------------------
 billboarder() %>% 
   bb_linechart(data = wide, dasharray = "6 2 1 2")
 

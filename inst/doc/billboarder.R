@@ -3,17 +3,22 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library("billboarder")
+library(billboarder)
+
+## -----------------------------------------------------------------------------
+set_theme("insight")
+set_color_palette(scales::brewer_pal(palette = "Set1")(9))
 
 ## ----barchart-----------------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("prod_par_filiere")
 
 billboarder(data = prod_par_filiere) %>%
   bb_barchart(
-    mapping = bbaes(x = annee, y = prod_hydraulique), color = "#102246"
+    mapping = aes(x = annee, y = prod_hydraulique),
+    color = "#102246"
   ) %>%
   bb_y_grid(show = TRUE) %>%
   bb_y_axis(
@@ -27,7 +32,7 @@ billboarder(data = prod_par_filiere) %>%
   )
 
 ## ----barchart-dodge-----------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("prod_par_filiere")
@@ -51,7 +56,7 @@ billboarder() %>%
   )
 
 ## ----barchart-stacked---------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("prod_par_filiere")
@@ -82,21 +87,31 @@ billboarder() %>%
 
 ## ----scatter------------------------------------------------------------------
 billboarder() %>% 
- bb_scatterplot(data = iris, x = "Sepal.Length", y = "Sepal.Width", group = "Species") %>% 
+ bb_scatterplot(
+   data = mtcars, 
+   x = "wt", y = "mpg", group = "cyl",
+   point_opacity = 1
+ ) %>% 
+  # don't display all values on x-axis
  bb_axis(x = list(tick = list(fit = FALSE))) %>% 
- bb_point(r = 8)
+ bb_point(r = 5) %>% 
+  # add grids
+  bb_x_grid(show = TRUE) %>%
+  bb_y_grid(show = TRUE)
 
 
 ## ----scatter-bubble-----------------------------------------------------------
-billboarder() %>% 
+billboarder(data = mtcars) %>% 
   bb_scatterplot(
-    data = iris, 
-    mapping = bbaes(Sepal.Length, Sepal.Width, group = Species, size = Petal.Width)
+   mapping = aes(wt, mpg, group = cyl, size = scales::rescale(qsec, to = c(0.2, 7))),
+   point_opacity = 1
   ) %>% 
-  bb_x_axis(tick = list(fit = FALSE))
+  bb_axis(x = list(tick = list(fit = FALSE))) %>% 
+  bb_x_grid(show = TRUE) %>%
+  bb_y_grid(show = TRUE)
 
 ## ----pie----------------------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("prod_par_filiere")
@@ -115,8 +130,20 @@ billboarder() %>%
   bb_labs(title = "Share of nuclear power in France in 2016",
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
+## ----donut--------------------------------------------------------------------
+billboarder() %>% 
+  bb_donutchart(data = nuclear2016) %>% 
+  bb_donut(
+    title = "Share of nuclear power\nin France in 2016",
+    label = list(
+      format = JS("function(value, ratio, id) {	return id + ': ' + d3.format('.0%')(ratio);}")
+    )
+  ) %>% 
+  bb_legend(show = FALSE) %>% 
+  bb_labs(caption = "Data source: RTE (https://opendata.rte-france.com)")
+
 ## ----lines-date---------------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("equilibre_mensuel")
@@ -157,7 +184,7 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
 ## ----lines-time---------------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("cdc_prod_filiere")
@@ -173,7 +200,10 @@ sun <- data.frame(
 
 # line chart
 billboarder() %>% 
-  bb_linechart(data = cdc_prod_filiere[, c("date_heure", "prod_solaire")]) %>% 
+  bb_linechart(
+    data = cdc_prod_filiere,
+    mapping = aes(date_heure, prod_solaire)
+  ) %>% 
   bb_x_axis(tick = list(format = "%H:%M", fit = FALSE)) %>% 
   bb_y_axis(min = 0, padding = 0) %>% 
   bb_regions(
@@ -197,7 +227,7 @@ billboarder() %>%
           caption = "Data source: RTE (https://opendata.rte-france.com)")
 
 ## ----area-stacked-------------------------------------------------------------
-library("billboarder")
+library(billboarder)
 
 # data
 data("cdc_prod_filiere")
@@ -238,11 +268,11 @@ dat$ymax2 <- dat$y2 + sample(3:15, 20, TRUE)
 # Make chart : use ymin & ymax aes for range
 billboarder(data = dat) %>% 
   bb_linechart(
-    mapping = bbaes(x = date, y = y1, ymin = ymin1, ymax = ymax1),
+    mapping = aes(x = date, y = y1, ymin = ymin1, ymax = ymax1),
     type = "area-line-range"
   ) %>% 
   bb_linechart(
-    mapping = bbaes(x = date, y = y2, ymin = ymin2, ymax = ymax2), 
+    mapping = aes(x = date, y = y2, ymin = ymin2, ymax = ymax2), 
     type = "area-spline-range"
   ) %>% 
   bb_y_axis(min = 50)

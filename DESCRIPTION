@@ -1,6 +1,6 @@
 Package: billboarder
 Title: Create Interactive Chart with the JavaScript 'Billboard' Library
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
   person("Victor", "Perrier", email = "victor.perrier@dreamrs.fr", role = c("aut", "cre")),
   person("Fanny", "Meyer", email = "fanny.meyer@dreamrs.fr", role = c("aut")),
@@ -22,11 +22,11 @@ Imports: htmlwidgets, htmltools, magrittr, jsonlite, ggplot2, scales,
 Suggests: RColorBrewer, testthat, knitr, rmarkdown, covr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-02-11 08:43:55 UTC; perri
+Packaged: 2021-03-27 21:31:30 UTC; perri
 Author: Victor Perrier [aut, cre],
   Fanny Meyer [aut],
   NAVER Corp [cph] (billboard.js library),
   Mike Bostock [cph] (d3.format library)
 Maintainer: Victor Perrier <victor.perrier@dreamrs.fr>
 Repository: CRAN
-Date/Publication: 2021-02-11 09:10:02 UTC
+Date/Publication: 2021-03-27 21:50:02 UTC

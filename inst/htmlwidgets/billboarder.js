@@ -90,7 +90,8 @@ HTMLWidgets.widget({
         }
         
         if (typeof bb_opts.export !== "undefined") {
-          bb_opts.onrendered = function(ctx) {
+          bb_opts.onrendered = function() {
+            var ctx = this;
             setTimeout(function() {
               ctx.export("image/png", function(dataUrl) {
                 var link = document.getElementById(el.id + "-export");
@@ -113,7 +114,20 @@ HTMLWidgets.widget({
 
 
         // Generate billboard chart
-        chart = bb.generate(bb_opts);
+        chart = bb.generate(bb_opts)
+        
+        // if in flexdahboard, whait before redrawing chart
+        // because 1st init doesn't work for some reason
+        if (typeof(window.FlexDashboard) !== "undefined") {
+          setTimeout(function() {
+            chart.flush();
+            chart.resize({
+              width: el.clientWidth,
+              height: el.clientHeight
+            });
+          }, 500);
+        }
+
         
 
         // Billboarder specials
@@ -183,7 +197,9 @@ HTMLWidgets.widget({
               captionG.appendChild(captionText);
             }
             
-            svg.appendChild(captionG);
+            if (svg !== null) {
+                svg.appendChild(captionG);
+            }
             
           } else {
             caption.setAttribute("transform", "translate(" + w + "," + (h-3) + ")");
@@ -231,7 +247,9 @@ HTMLWidgets.widget({
                 captionG.appendChild(captionText);
               }
               
-              svg.appendChild(captionG);
+              if (svg !== null) {
+                svg.appendChild(captionG);
+              }
               
             } else {
               caption.setAttribute("transform", "translate(" + w + "," + (h-3) + ")");

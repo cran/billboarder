@@ -1,7 +1,8 @@
 ## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  screenshot.force = FALSE
 )
 library(billboarder)
 
@@ -134,7 +135,7 @@ billboarder() %>%
 billboarder() %>% 
   bb_donutchart(data = nuclear2016) %>% 
   bb_donut(
-    title = "Share of nuclear power\nin France in 2016",
+    title = "Share of nuclear\nin France",
     label = list(
       format = JS("function(value, ratio, id) {	return id + ': ' + d3.format('.0%')(ratio);}")
     )
@@ -176,7 +177,8 @@ billboarder() %>%
   bb_colors_manual("consommation" = "firebrick", "production" = "forestgreen") %>% 
   bb_legend(position = "right") %>% 
   bb_zoom(
-    enabled = list(type = "drag"),
+    enabled = TRUE,
+    type = "drag",
     resetButton = list(text = "Unzoom")
   ) %>% 
   bb_labs(title = "Monthly electricity consumption and production in France (2007 - 2017)",

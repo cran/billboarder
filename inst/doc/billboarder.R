@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
 library(billboarder)
 
 ## -----------------------------------------------------------------------------
-set_theme("insight")
+set_theme("graph")
 set_color_palette(scales::brewer_pal(palette = "Set1")(9))
 
 ## ----barchart-----------------------------------------------------------------
@@ -310,5 +310,55 @@ billboarder() %>%
       list(value = unname(samples_mean['A']), text = "mean of sample A"),
       list(value = unname(samples_mean['B']), text = "mean of sample B")
     )
+  )
+
+## ----radar-single-------------------------------------------------------------
+data("avengers_wide")
+billboarder() %>%
+  bb_radarchart(
+    data = avengers_wide[, 1:2]
+  )
+
+## ----radar-multiple-----------------------------------------------------------
+data("avengers")
+billboarder() %>%
+  bb_radarchart(
+    data = avengers, 
+    mapping = bbaes(x = axis, y = value, group = group)
+  )
+
+## ----gauge-1------------------------------------------------------------------
+billboarder() %>% 
+  bb_gaugechart(value = 50, color = "#112446")
+
+## ----gauge-2------------------------------------------------------------------
+bauge(round(sample.int(100, 1)), subtitle = "of total")
+
+## ----gauge-multiple-----------------------------------------------------------
+billboarder() %>%
+  bb_gaugechart(
+    value = c(15, 30),
+    name = c("A", "B"),
+    color = c("steelblue", "firebrick")
+  ) %>% 
+  bb_gauge(max = 60) %>% 
+  bb_data(
+    labels = list(colors = "#FFF")
+  )
+
+## ----treemap-1----------------------------------------------------------------
+data("mpg", package = "ggplot2")
+billboarder() %>% 
+  bb_treemapchart(
+    data = table(manufacturer = mpg$manufacturer), 
+    mapping = aes(x = manufacturer, y = Freq),
+    label = list(show = TRUE, threshold = 0.03),
+    tile = "binary" # or "slice" or "dice"
+  ) %>% 
+  bb_data(
+    labels = list(colors = "#FFF")
+  ) %>% 
+  bb_color(
+    palette = colorRampPalette(c("#08519C", "#9ECAE1"))(15) #15 = n manufacturer
   )
 

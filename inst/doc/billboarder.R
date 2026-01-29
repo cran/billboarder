@@ -7,7 +7,7 @@ knitr::opts_chunk$set(
 library(billboarder)
 
 ## -----------------------------------------------------------------------------
-set_theme("modern")
+set_theme("insight")
 set_color_palette(scales::brewer_pal(palette = "Set1")(9))
 
 ## ----barchart-----------------------------------------------------------------
@@ -127,6 +127,16 @@ nuclear2016 <- data.frame(
 # pie chart !
 billboarder() %>% 
   bb_piechart(data = nuclear2016) %>% 
+  bb_pie(
+    label = list(
+      line = list(
+        show = TRUE,
+        distance = 30,
+        text = TRUE
+      )
+    )
+  ) %>% 
+  bb_legend(show = FALSE) %>% 
   bb_labs(
     title = "Share of nuclear power in France in 2016",
     caption = "Data source: RTE (https://opendata.reseaux-energies.fr/)"
@@ -138,7 +148,12 @@ billboarder() %>%
   bb_donut(
     title = "Share of nuclear\nin France",
     label = list(
-      format = JS("function(value, ratio, id) {	return id + ': ' + d3.format('.0%')(ratio);}")
+      format = JS("function(value, ratio, id) {	return d3.format('.0%')(ratio);}"),
+      line = list(
+        show = TRUE,
+        distance = 30,
+        text = TRUE
+      )
     )
   ) %>% 
   bb_legend(show = FALSE) %>% 
